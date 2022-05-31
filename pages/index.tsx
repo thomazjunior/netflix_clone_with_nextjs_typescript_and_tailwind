@@ -2,6 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Banner from '../components/Banner'
 import Header from '../components/Header'
+import Row from '../components/Row'
 import { Movie } from '../typings'
 import requests from '../utils/requests'
 
@@ -25,7 +26,7 @@ const Home = ({
   topRated,
   trendingNow,
 }: Props) => {
-  {console.log(netflixOriginals)}
+  console.log(netflixOriginals);
   return (
     <div
       className="relative h-screen bg-gradient-to-b from-gray-900/10
@@ -37,16 +38,13 @@ const Home = ({
       </Head>
       <Header />
       
-      <main>
+      <main className='relative pl-4 pb-24 lg:space-y-24 lg:pl-16'>
         <Banner netflixOriginals={netflixOriginals} />
-        <section>
-          {/* Row */}
-          {/* Row */}
-          {/* Row */}
-          {/* Row */}
-          {/* Row */}
-          {/* Row */}
-          {/* Row */}
+        <section className=''>
+          <Row/>
+          <Row/>
+          <Row/>
+          <Row/>
         </section>
       </main>
     </div>
