@@ -5,7 +5,6 @@ import {
   signOut,
   User,
 } from 'firebase/auth'
-import error from 'next/error'
 
 import { useRouter } from 'next/router'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
@@ -20,10 +19,6 @@ interface IAuth {
   loading: boolean
 }
 
-interface AuthProviderProps {
-  children: React.ReactNode
-}
-
 const AuthContext = createContext<IAuth>({
   user: null,
   signUp: async () => {},
@@ -33,12 +28,16 @@ const AuthContext = createContext<IAuth>({
   loading: false,
 })
 
+interface AuthProviderProps {
+  children: React.ReactNode
+}
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
-  const [initialLoading, setInitialLoading] = useState(true)
-  const [error, setError] = useState(null)
   const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
+  const [error, setError] = useState(null)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   useEffect(
     () =>
@@ -74,17 +73,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signIn = async (email: string, password: string) => {
     setLoading(true)
-
     await signInWithEmailAndPassword(auth, email, password)
-      .then((userCredentials) => {
-        setUser(userCredentials.user)
+      .then((userCredential) => {
+        setUser(userCredential.user)
         router.push('/')
         setLoading(false)
       })
       .catch((error) => alert(error.message))
       .finally(() => setLoading(false))
   }
-
 
   const logout = async () => {
     setLoading(true)
@@ -98,8 +95,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const memoedValue = useMemo(
-    () => ({ user, signUp, signIn, loading, logout, error }),
-    [user, loading]
+    () => ({ user, signUp, signIn, error, loading, logout }),
+    [user, loading, error]
   )
 
   return (
@@ -109,6 +106,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   )
 }
 
+// Let's only export the `useAuth` hook instead of the context.
+// We only want to use the hook directly and never the context comopnent.
 export default function useAuth() {
   return useContext(AuthContext)
 }
